@@ -95,7 +95,7 @@ export default {
       this.isActiveDelay = true
 
       setTimeout(() => {
-        this.isActiveDelay = false  
+        this.isActiveDelay = false
       }, ms)
     }
   },
