@@ -25,14 +25,25 @@
                             </g>
                         </svg>
                     </label>
-                    <input @change="fileChange" id="mu-file-input" type="file" accept="image/*" multiple
+                    <input @change="fileChange"
+                           id="mu-file-input"
+                           type="file"
+                           :accept="accept"
+                           multiple
                            hidden>
                 </div>
 
                 <!--IMAGES PREVIEW-->
 
-                <div v-for="(image, index) in savedMedia" :key="index" class="mu-image-container">
-                    <img :src="location + '/' + image.name" alt="" class="mu-images-preview">
+                <div v-for="(e, index) in savedMedia" :key="index" class="mu-image-container">
+                    <img v-if="e.is_image"
+                         :src="e.path"
+                         alt=""
+                         class="mu-images-preview">
+                    <a v-if="!e.is_image"
+                       :href="e.path" alt="">
+                        {{ e.original_name }}
+                    </a>
                     <button @click="removeSavedMedia(index)" class="mu-close-btn" type="button">
                         <svg
                              class='mu-times-icon'
@@ -47,8 +58,17 @@
                         </svg>
                     </button>
                 </div>
-                <div v-for="(image, index) in addedMedia" :key="index" class="mu-image-container">
-                    <img :src="image.url" alt="" class="mu-images-preview">
+                <div v-for="(e, index) in addedMedia" :key="index" class="mu-image-container">
+                    <img v-if="e.is_image" :src="e.path" alt="" class="mu-images-preview">
+                    <a v-if="!e.is_image" :href="e.path" alt="">
+                        <svg viewBox="0 0 20 20" width="0.5em" height="0.5em" style="float: left; font-size: 3rem;">
+                            <path fill="currentColor" d="M17.206,5.45l0.271-0.27l-4.275-4.274l-0.27,0.269V0.9H3.263c-0.314,0-0.569,0.255-0.569,0.569v17.062
+                                c0,0.314,0.255,0.568,0.569,0.568h13.649c0.313,0,0.569-0.254,0.569-0.568V5.45H17.206z M12.932,2.302L16.08,5.45h-3.148V2.302z
+                                 M16.344,17.394c0,0.314-0.254,0.569-0.568,0.569H4.4c-0.314,0-0.568-0.255-0.568-0.569V2.606c0-0.314,0.254-0.568,0.568-0.568
+                                h7.394v4.55h4.55V17.394z"></path>
+                        </svg>
+                        {{ e.original_name }}
+                    </a>
                     <button @click="removeAddedMedia(index)" class="mu-close-btn" type="button">
                         <svg
                              class='mu-times-icon'
@@ -98,10 +118,6 @@ export default {
             type: Array,
             default: []
         },
-        location: {
-            type: String,
-            default: ''
-        },
         max: {
             type: Number,
             default: null
@@ -113,7 +129,11 @@ export default {
         warnings: {
             type: Boolean,
             default: true
-        }
+        },
+        allowNonImages: {
+            type: Boolean,
+            default: false
+        },
     },
     mounted() {
         this.init()
@@ -129,13 +149,7 @@ export default {
     },
     methods: {
         init() {
-            this.savedMedia = this.media
-
-            this.savedMedia.forEach((image, index) => {
-                if (!this.savedMedia[index].url) {
-                    this.savedMedia[index].url = this.location + "/" + image.name
-                }
-            });
+            this.savedMedia = this.media;
 
             setTimeout(() => this.isLoading = false, 1000)
 
@@ -149,15 +163,20 @@ export default {
                 if (!this.max || this.allMedia.length < this.max) {
                     if (files[i].size <= this.maxFilesize * 1000000) {
                         let formData = new FormData
-                        let url = URL.createObjectURL(files[i])
-                        formData.set('image', files[i])
+                        formData.set('file', files[i])
 
                         const { data } = await axios.post(this.server, formData)
-                        let addedImage = { url: url, name: data.name, size: files[i].size, type: files[i].type }
-                        this.addedMedia.push(addedImage)
-
+                        const added = {
+                            path: data.path,
+                            name: data.name,
+                            original_name: data.original_name,
+                            size: files[i].size,
+                            type: files[i].type,
+                            is_image: files[i].type.startsWith('image/'),
+                        };
+                        this.addedMedia.push(added)
                         this.$emit('change', this.allMedia)
-                        this.$emit('add', addedImage, this.addedMedia)
+                        this.$emit('add', added, this.addedMedia)
                     } else {
                         this.$emit('maxFilesize', files[i].size)
                         if (this.warnings) {
@@ -196,6 +215,9 @@ export default {
     computed: {
         allMedia() {
             return [...this.savedMedia, ...this.addedMedia];
+        },
+        accept() {
+            return this.allowNonImages ? '' : 'image/*';
         }
     },
     emits: [
@@ -275,6 +297,7 @@ export default {
     margin: 0.25rem !important;
 
     position: relative;
+    overflow-wrap: break-word;
 }
 
 .mu-images-preview {
@@ -330,4 +353,5 @@ img {
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
-}</style>
+}
+</style>
