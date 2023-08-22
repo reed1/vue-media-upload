@@ -1,25 +1,22 @@
 <template>
   <transition name="fade">
     <div
-      v-show="isActive || isActiveDelay"
-      :class="{ 'velmld-full-screen': isFullScreen }"
-      :style="{ backgroundColor }"
-      ref="velmld"
-      class="velmld-overlay"
-    >
+         v-show="isActive || isActiveDelay"
+         :class="{ 'velmld-full-screen': isFullScreen }"
+         :style="{ backgroundColor }"
+         ref="velmld"
+         class="velmld-overlay">
       <div class="velmld-spinner">
         <slot name="default">
           <component
-            :is="spinner"
-            :color="color"
-            :size="`${size}px`"
-            :duration="`${duration}s`"
-          />
+                     :is="spinner"
+                     :color="color"
+                     :size="`${size}px`"
+                     :duration="`${duration}s`" />
         </slot>
         <div
-          v-if="text.length"
-          :style="{ color, ...textStyle }"
-        >
+             v-if="text.length"
+             :style="{ color, ...textStyle }">
           {{ text }}
         </div>
       </div>
@@ -73,7 +70,7 @@ export default {
       default: 0
     }
   },
-  data () {
+  data() {
     return {
       isActive: this.active || false,
       isActiveDelay: false
@@ -82,7 +79,7 @@ export default {
   /**
    * Append class 'velmld-parent' to parent container.
    */
-  mounted () {
+  mounted() {
     this.$refs.velmld.parentNode.classList.add('velmld-parent')
 
     if (this.delay) {
@@ -91,7 +88,7 @@ export default {
     }
   },
   methods: {
-    delayActive (ms) {
+    delayActive(ms) {
       this.isActiveDelay = true
 
       setTimeout(() => {
@@ -104,7 +101,7 @@ export default {
      * Binding outside component value and inside component value.
      * Append class 'velmld-parent' to parent container.
      */
-    active (value) {
+    active(value) {
       this.isActive = value
       if (value) {
         this.$refs.velmld.parentNode.classList.add('velmld-parent')
@@ -116,12 +113,16 @@ export default {
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity .3s;
 }
-.fade-enter, .fade-leave-to {
+
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
+
 .velmld-overlay {
   position: absolute;
   z-index: 3000;
@@ -132,6 +133,7 @@ export default {
   left: 0;
   transition: opacity .3s;
 }
+
 .velmld-spinner {
   top: 50%;
   left: 50%;
@@ -139,6 +141,7 @@ export default {
   position: absolute;
   text-align: center
 }
+
 .velmld-full-screen {
   position: fixed;
 }
