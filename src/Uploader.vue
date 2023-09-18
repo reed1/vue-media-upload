@@ -1,8 +1,7 @@
 <template>
     <div>
         <div class="mu-container" :class="isInvalid ? 'mu-red-border' : ''">
-            <Loader
-                    color="#0275d8"
+            <Loader color="#0275d8"
                     :active="isLoading"
                     spinner="line-scale"
                     background-color='rgba(255, 255, 255, .4)' />
@@ -10,7 +9,7 @@
 
                 <!--UPLOAD BUTTON-->
                 <div class="mu-plusbox-container">
-                    <label for="mu-file-input" class="mu-plusbox">
+                    <label :for="elementId" class="mu-plusbox">
                         <svg
                              class="mu-plus-icon"
                              xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +25,7 @@
                         </svg>
                     </label>
                     <input @change="fileChange"
-                           id="mu-file-input"
+                           :id="elementId"
                            type="file"
                            :accept="accept"
                            multiple
@@ -61,7 +60,8 @@
                 <div v-for="(e, index) in addedMedia" :key="index" class="mu-image-container">
                     <img v-if="e.is_image" :src="e.path" alt="" class="mu-images-preview">
                     <a v-if="!e.is_image" :href="e.path" alt="">
-                        <svg viewBox="0 0 20 20" width="0.5em" height="0.5em" style="float: left; font-size: 3rem;">
+                        <svg viewBox="0 0 20 20" width="0.5em" height="0.5em"
+                             style="float: left; font-size: 3rem;">
                             <path fill="currentColor" d="M17.206,5.45l0.271-0.27l-4.275-4.274l-0.27,0.269V0.9H3.263c-0.314,0-0.569,0.255-0.569,0.569v17.062
                                 c0,0.314,0.255,0.568,0.569,0.568h13.649c0.313,0,0.569-0.254,0.569-0.568V5.45H17.206z M12.932,2.302L16.08,5.45h-3.148V2.302z
                                  M16.344,17.394c0,0.314-0.254,0.569-0.568,0.569H4.4c-0.314,0-0.568-0.255-0.568-0.569V2.606c0-0.314,0.254-0.568,0.568-0.568
@@ -103,6 +103,10 @@
 import Loader from './loader/index.vue';
 import axios from 'axios'
 
+const state = {
+    idCounter: 0
+};
+
 export default {
 
     props: {
@@ -139,7 +143,10 @@ export default {
         this.init()
     },
     data() {
+        state.idCounter += 1
+        const id = state.idCounter;
         return {
+            elementId: 'mu-file-input-' + id,
             addedMedia: [],
             savedMedia: [],
             removedMedia: [],
