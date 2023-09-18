@@ -42,7 +42,7 @@
                          class="mu-images-preview">
                     <a v-if="!e.is_image"
                        :href="e.path" alt="">
-                        {{ e.original_name }}
+                        {{ e.name }}
                     </a>
                     <button @click="removeSavedMedia(index)" class="mu-close-btn" type="button">
                         <svg
@@ -67,7 +67,7 @@
                                  M16.344,17.394c0,0.314-0.254,0.569-0.568,0.569H4.4c-0.314,0-0.568-0.255-0.568-0.569V2.606c0-0.314,0.254-0.568,0.568-0.568
                                 h7.394v4.55h4.55V17.394z"></path>
                         </svg>
-                        {{ e.original_name }}
+                        {{ e.name }}
                     </a>
                     <button @click="removeAddedMedia(index)" class="mu-close-btn" type="button">
                         <svg
@@ -169,7 +169,6 @@ export default {
                         const added = {
                             path: data.path,
                             name: data.name,
-                            original_name: data.original_name,
                             size: files[i].size,
                             type: files[i].type,
                             is_image: files[i].type.startsWith('image/'),
