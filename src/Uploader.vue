@@ -216,7 +216,7 @@ export default {
             return [...this.savedMedia, ...this.addedMedia];
         },
         accept() {
-            return this.allowNonImages ? '' : 'image/*';
+            return this.allowNonImages ? '*/*' : 'image/*';
         }
     },
     emits: [
